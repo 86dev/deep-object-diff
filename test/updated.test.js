@@ -36,7 +36,7 @@ describe('.updatedDiff', () => {
         [new Date('2017-01-01'), new Date('2017-01-02')],
         [new Date('2017-01-01T00:00:00.636Z'), new Date('2017-01-01T00:00:00.637Z')],
       ])('returns right hand side value when different to left hand side value (%s, %s)', (lhs, rhs) => {
-        expect(updatedDiff(lhs, rhs)).toEqual(rhs);
+        expect(updatedDiff(lhs, rhs)).toEqual(lhs);
       });
     });
   });
@@ -44,27 +44,27 @@ describe('.updatedDiff', () => {
   describe('recursive case', () => {
     describe('object', () => {
       test("return right hand side empty object value when left hand side has been updated", () => {
-        expect(updatedDiff({ a: 1 }, { a: {} })).toEqual({ a: {} });
+        expect(updatedDiff({ a: 1 }, { a: {} })).toEqual({ a: 1 });
       });
 
       test('returns right hand side value when given objects are different at root', () => {
-        expect(updatedDiff({ a: 1 }, { a: 2 })).toEqual({ a: 2 });
+        expect(updatedDiff({ a: 1 }, { a: 2 })).toEqual({ a: 1 });
       });
 
       test('returns right hand side value when right hand side value is null', () => {
-        expect(updatedDiff({ a: 1 }, { a: null })).toEqual({ a: null });
+        expect(updatedDiff({ a: 1 }, { a: null })).toEqual({ a: 1 });
       });
 
       test('returns subset of right hand side value when sibling objects differ', () => {
-        expect(updatedDiff({ a: { b: 1 }, c: 2 }, { a: { b: 1 }, c: 3 })).toEqual({ c: 3 });
+        expect(updatedDiff({ a: { b: 1 }, c: 2 }, { a: { b: 1 }, c: 3 })).toEqual({ c: 2 });
       });
 
       test('returns subset of right hand side value when nested values differ', () => {
-        expect(updatedDiff({ a: { b: 1, c: 2} }, { a: { b: 1, c: 3 } })).toEqual({ a: { c: 3 } });
+        expect(updatedDiff({ a: { b: 1, c: 2} }, { a: { b: 1, c: 3 } })).toEqual({ a: { c: 2 } });
       });
 
       test('returns subset of right hand side value when nested values differ at multiple paths', () => {
-        expect(updatedDiff({ a: { b: 1 }, c: 2, d: { e: 100 } }, { a: { b: 99 }, c: 3, d: { e: 100 } })).toEqual({ a: { b: 99 }, c: 3 });
+        expect(updatedDiff({ a: { b: 1 }, c: 2, d: { e: 100 } }, { a: { b: 99 }, c: 3, d: { e: 100 } })).toEqual({ a: { b: 1 }, c: 2 });
       });
 
       test('returns empty object when deleted from right hand side', () => {
@@ -76,25 +76,25 @@ describe('.updatedDiff', () => {
       });
 
       test('returns subset of right hand side with updated date', () => {
-        expect(updatedDiff({ date: new Date('2016') }, { date: new Date('2017') })).toEqual({ date: new Date('2017') });
+        expect(updatedDiff({ date: new Date('2016') }, { date: new Date('2017') })).toEqual({ date: new Date('2016') });
       });
     });
 
     describe('arrays', () => {
       test("return right hand side empty object value when left hand side has been updated", () => {
-        expect(updatedDiff([{ a: 1 }], [{ a: {} }])).toEqual({ 0: { a: {} } });
+        expect(updatedDiff([{ a: 1 }], [{ a: {} }])).toEqual({ 0: { a: 1 } });
       });
 
       test('returns right hand side value as object of indices to value when arrays are different', () => {
-        expect(updatedDiff([1], [2])).toEqual({ 0: 2 });
+        expect(updatedDiff([1], [2])).toEqual({ 0: 1 });
       });
 
       test('returns subset of right hand side array as object of indices to value when arrays differs at multiple indicies', () => {
-        expect(updatedDiff([1, 2, 3], [9, 8, 3])).toEqual({ 0: 9, 1: 8 });
+        expect(updatedDiff([1, 2, 3], [9, 8, 3])).toEqual({ 0: 1, 1: 2 });
       });
 
       test('returns subset of right hand side array as object of indices to value when right hand side array has deletions', () => {
-        expect(updatedDiff([1, 2, 3], [1, 3])).toEqual({ 1: 3 });
+        expect(updatedDiff([1, 2, 3], [1, 3])).toEqual({ 1: 2 });
       });
 
       test('returns empty object when right hand side array has additions', () => {
@@ -102,7 +102,7 @@ describe('.updatedDiff', () => {
       });
 
       test('returns subset of right hand side with updated date', () => {
-        expect(updatedDiff([new Date('2016')], [new Date('2017')])).toEqual({ 0: new Date('2017') });
+        expect(updatedDiff([new Date('2016')], [new Date('2017')])).toEqual({ 0: new Date('2016') });
       });
     });
 
@@ -118,7 +118,7 @@ describe('.updatedDiff', () => {
         lhs.a = 1;
         const rhs = Object.create(null);
         rhs.a = 2;
-        expect(updatedDiff(lhs, rhs)).toEqual({ a: 2 });
+        expect(updatedDiff(lhs, rhs)).toEqual({ a: 1 });
       });
 
       test('returns subset of right hand side value when sibling objects differ', () => {
@@ -128,7 +128,7 @@ describe('.updatedDiff', () => {
         const rhs = Object.create(null);
         rhs.a = { b: 1 };
         rhs.c = 3;
-        expect(updatedDiff(lhs, rhs)).toEqual({ c: 3 });
+        expect(updatedDiff(lhs, rhs)).toEqual({ c: 2 });
       });
 
       test('returns subset of right hand side value when nested values differ', () => {
@@ -136,7 +136,7 @@ describe('.updatedDiff', () => {
         lhs.a = { b: 1, c: 2 };
         const rhs = Object.create(null);
         rhs.a = { b: 1, c: 3 };
-        expect(updatedDiff(lhs, rhs)).toEqual({ a: { c: 3 } });
+        expect(updatedDiff(lhs, rhs)).toEqual({ a: { c: 2 } });
       });
 
       test('returns subset of right hand side with updated date', () => {
@@ -144,7 +144,7 @@ describe('.updatedDiff', () => {
         lhs.date = new Date('2016');
         const rhs = Object.create(null);
         rhs.date = new Date('2017');
-        expect(updatedDiff(lhs, rhs)).toEqual({ date: new Date('2017') });
+        expect(updatedDiff(lhs, rhs)).toEqual({ date: new Date('2016') });
       });
     });
 
@@ -152,7 +152,7 @@ describe('.updatedDiff', () => {
       test('can represent the property in diff despite it being part of Object.prototype', () => {
         const lhs = { hasOwnProperty: false };
         const rhs = { hasOwnProperty: true };
-        expect(updatedDiff(lhs, rhs)).toEqual({ hasOwnProperty: true });
+        expect(updatedDiff(lhs, rhs)).toEqual({ hasOwnProperty: false });
       });
     });
   });

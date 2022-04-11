@@ -16,7 +16,7 @@ const deletedDiff = (lhs, rhs) => {
       return acc;
     }
 
-    acc[key] = undefined;
+    acc[key] = l[key];
     return acc;
   }, {});
 };

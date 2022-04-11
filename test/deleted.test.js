@@ -50,15 +50,15 @@ describe('.deletedDiff', () => {
       });
 
       test('returns keys as undefined when deleted from right hand side root', () => {
-        expect(deletedDiff({ a: 1, b: { c: 2 }}, { a: 1 })).toEqual({ b: undefined });
+        expect(deletedDiff({ a: 1, b: { c: 2 }}, { a: 1 })).toEqual({ b: { c: 2 } });
       });
 
       test('returns keys as undefined when deeply deleted from right hand side', () => {
-        expect(deletedDiff({ a: { b: 1 }, c: 2, d: { e: 100 } }, { a: { b: 1 }, c: 2, d: {} })).toEqual({ d: { e: undefined } });
+        expect(deletedDiff({ a: { b: 1 }, c: 2, d: { e: 100 } }, { a: { b: 1 }, c: 2, d: {} })).toEqual({ d: { e: 100 } });
       });
 
       test('returns subset of right hand side with deleted date', () => {
-        expect(deletedDiff({ date: new Date('2016') }, {})).toEqual({ date: undefined });
+        expect(deletedDiff({ date: new Date('2016') }, {})).toEqual({ date: new Date('2016') });
       });
     });
 
@@ -72,11 +72,11 @@ describe('.deletedDiff', () => {
       });
 
       test('returns subset of right hand side array as object of indices to value when right hand side array has deletions', () => {
-        expect(deletedDiff([1, 2, 3], [1, 3])).toEqual({ 2: undefined });
+        expect(deletedDiff([1, 2, 3], [1, 3])).toEqual({ 2: 3 });
       });
 
       test('returns subset of right hand side with added date', () => {
-        expect(deletedDiff([new Date('2016')], [])).toEqual({ 0: undefined });
+        expect(deletedDiff([new Date('2016')], [])).toEqual({ 0: new Date('2016') });
       });
     });
 
@@ -87,7 +87,7 @@ describe('.deletedDiff', () => {
         lhs.a = 1;
         lhs.b = 2;
         rhs.a = 1;
-        expect(deletedDiff(lhs, rhs)).toEqual({ b: undefined });
+        expect(deletedDiff(lhs, rhs)).toEqual({ b: 2 });
       });
 
       test('returns keys as undefined when deeply deleted from right hand side', () => {
@@ -97,14 +97,14 @@ describe('.deletedDiff', () => {
         lhs.c = { d: 100 };
         rhs.a = { b: 1 };
         rhs.c = {};
-        expect(deletedDiff(lhs, rhs)).toEqual({ c: { d: undefined } });
+        expect(deletedDiff(lhs, rhs)).toEqual({ c: { d: 100 } });
       });
 
       test('returns subset of right hand side with deleted date', () => {
         const lhs = Object.create(null);
         const rhs = Object.create(null);
         lhs.date = new Date('2016');
-        expect(deletedDiff({ date: new Date('2016') }, rhs)).toEqual({ date: undefined });
+        expect(deletedDiff({ date: new Date('2016') }, rhs)).toEqual({ date: new Date('2016') });
       });
     });
 
@@ -112,7 +112,7 @@ describe('.deletedDiff', () => {
       test('can represent the property in diff despite it being part of Object.prototype', () => {
         const lhs = { hasOwnProperty: true };
         const rhs = {};
-        expect(deletedDiff(lhs, rhs)).toEqual({ hasOwnProperty: undefined });
+        expect(deletedDiff(lhs, rhs)).toEqual({ hasOwnProperty: true });
       });
     });
   });

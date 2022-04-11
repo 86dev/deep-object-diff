@@ -3,14 +3,14 @@ import { isDate, isEmptyObject, isObject, hasOwnProperty } from './utils.js';
 const updatedDiff = (lhs, rhs) => {
   if (lhs === rhs) return {};
 
-  if (!isObject(lhs) || !isObject(rhs)) return rhs;
+  if (!isObject(lhs) || !isObject(rhs)) return lhs;
 
   const l = lhs;
   const r = rhs;
 
   if (isDate(l) || isDate(r)) {
     if (l.valueOf() == r.valueOf()) return {};
-    return r;
+    return l;
   }
 
   return Object.keys(r).reduce((acc, key) => {

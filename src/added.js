@@ -17,7 +17,7 @@ const addedDiff = (lhs, rhs) => {
       return acc;
     }
 
-    acc[key] = r[key];
+    acc[key] = l[key];
     return acc;
   }, {});
 };
